@@ -24,21 +24,19 @@ module.exports = function memize( fn, options ) {
 
 			// Surface matched node to head if not already
 			if ( node !== head ) {
-				// As tail, shift to previous. Must only shift if not also
-				// head, since if both head and tail, there is no previous.
-				if ( node === tail ) {
-					tail = node.prev;
-				}
+				const beforeNode = node.prev;
+				const afterNode = node.next;
+				beforeNode.next = afterNode;
 
-				// Adjust siblings to point to each other. If node was tail,
-				// this also handles new tail's empty `next` assignment.
-				node.prev.next = node.next;
-				if ( node.next ) {
-					node.next.prev = node.prev;
+				if ( ! afterNode ) {
+					tail = beforeNode;
+				} else {
+					afterNode.prev = beforeNode;
 				}
 
 				node.next = head;
 				node.prev = null;
+
 				head.prev = node;
 				head = node;
 			}
